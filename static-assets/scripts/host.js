@@ -252,6 +252,16 @@
       var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
         studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
       selectStudioContent(site, studioPath);
+
+      setHash({ page: message.url, site });
+      CStudioAuthoring.ComponentsPanel.getPageModel(
+        studioPath,
+        'init-components',
+        true,
+        false
+      );
+
+      communicator.publish(Topics.DND_PANEL_OFF);
     }
   });
 

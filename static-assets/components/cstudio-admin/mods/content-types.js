@@ -1551,7 +1551,10 @@
         var dd = new DragAndDropDecorator(fieldContainerEl);
         var tar = new YAHOO.util.DDTarget(fieldContainerEl);
 
-        var controlExists = (this.config.controls.control.filter(control => control.name === field.type).length) > 0;
+        const controlExists = (this.config.controls.control.filter(control => {
+          const controlName = control.plugin ? control.plugin.name : control.name;
+          return (controlName === field.type);
+        }).length) > 0;
         if (!controlExists) {
           $(fieldContainerEl)
             .addClass('disabled')
@@ -3053,7 +3056,8 @@
           var val = supportedProperty.defaultValue ? supportedProperty.defaultValue : '';
           newDataSource.properties[newDataSource.properties.length] = {
             name: supportedProperty.name,
-            value: val
+            value: val,
+            type: supportedProperty.type
           };
         }
 
@@ -3900,15 +3904,19 @@
 
     CStudioAdminConsole.cleanPostfix = (identifier, type) => {
       const $input = $(identifier).siblings('input'),
-        currentPostfix = '_' + $input.val().split('_').pop(),
         controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
         postfixes = CStudioAdminConsole.getPostfixes(type, controls),
-        replace = currentPostfix + '([^' + currentPostfix + ']*)$',
-        re = new RegExp(replace, 'i');
+        currentPostfix = postfixes.filter(postfix => $input.val().endsWith(postfix)),
+        hasPostfix = currentPostfix.length > 0;
 
-      for (var k = 0; k <= postfixes.length; k++) {
-        if (currentPostfix.indexOf(postfixes[k]) > -1) {
-          $input.val($input.val().replace(re, ''));
+      if(hasPostfix) {
+        const replace = currentPostfix + '([^' + currentPostfix + ']*)$',
+          re = new RegExp(replace, 'i');
+
+        for (var k = 0; k <= postfixes.length; k++) {
+          if (currentPostfix.indexOf(postfixes[k]) > -1) {
+            $input.val($input.val().replace(re, ''));
+          }
         }
       }
     };
