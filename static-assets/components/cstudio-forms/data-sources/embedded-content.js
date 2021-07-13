@@ -61,6 +61,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         (contentType) => contentType.type === 'component' && contentType.name !== '/component/level-descriptor'
       );
     } else {
+      let parentPath = _self.form.path;
       CStudioAuthoring.Operations.openContentWebForm(
         _self.contentType,
         null,
@@ -75,7 +76,10 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
           },
           failure: function () {}
         },
-        [{ name: 'childForm', value: 'true' }],
+        [
+          { name: 'childForm', value: 'true' },
+          { name: 'parentPath', value: parentPath }
+        ],
         null,
         true
       );
